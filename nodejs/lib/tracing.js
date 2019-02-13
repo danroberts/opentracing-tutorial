@@ -1,25 +1,9 @@
-const { initTracer: initJaegerTracer } = require("jaeger-client");
+var opentracing = require("opentracing");
+var lightstep = require("lightstep-tracer");
 
 module.exports.initTracer = serviceName => {
-  const config = {
-    serviceName: serviceName,
-    sampler: {
-      type: "const",
-      param: 1,
-    },
-    reporter: {
-      logSpans: true,
-    },
-  };
-  const options = {
-    logger: {
-      info(msg) {
-        console.log("INFO ", msg);
-      },
-      error(msg) {
-        console.log("ERROR", msg);
-      },
-    },
-  };
-  return initJaegerTracer(config, options);
+  opentracing.initGlobalTracer(new lightstep.Tracer({
+        'collector_host': 'localhost',
+        'collector_port': 8360
+  }));
 };
